@@ -86,15 +86,20 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
   }
   
   func doSearch(searchTerm: String?) {
-    doSearch(searchTerm, sort: currentFilters["sort"] as? YelpSortMode, categories: currentFilters["categories"] as? [String], deals: currentFilters["deals"] as? Bool)
+    doSearch(searchTerm, sort: currentFilters["sort"] as? Int, categories: currentFilters["categories"] as? [String], deals: currentFilters["deals"] as? Bool, radius: currentFilters["radius"] as? Double)
   }
   
-  func doSearch(searchTerm: String?, sort: YelpSortMode?, categories: [String]?, deals: Bool?) {
+  func doSearch(searchTerm: String?, sort: Int?, categories: [String]?, deals: Bool?, radius: Double?) {
     let term = searchTerm ?? "Restaurants"
+    var sortMode: YelpSortMode?
+    
+    if sort != nil {
+      sortMode = YelpSortMode(rawValue: sort!)
+    }
     
     KVNProgress.showWithStatus("Searching...")
     
-    Business.searchWithTerm(term, sort: sort, categories: categories, deals: deals) { (businesses: [Business]!, error: NSError!) -> Void in
+    Business.searchWithTerm(term, sort: sortMode, categories: categories, deals: deals, radius: radius) { (businesses: [Business]!, error: NSError!) -> Void in
       if error == nil {
         self.businesses = businesses
         self.tableView.reloadData()
@@ -121,7 +126,6 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
   func filtersViewController(filtersViewController: FiltersViewController, didUpdateFilters filters: [String : AnyObject]) {
     currentFilters = filters
     
-    // TODO: Pass filter values
     doSearch(currentSearchTerm)
   }
 }

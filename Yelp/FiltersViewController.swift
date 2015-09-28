@@ -15,8 +15,19 @@ import UIKit
 class FiltersViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, SwitchCellDelegate {
   @IBOutlet weak var categoriesTableView: UITableView!
   @IBOutlet weak var dealsSwitch: UISwitch!
+  @IBOutlet weak var distanceContainerView: UIView!
+  @IBOutlet weak var distanceAutoButton: UIButton!
+  @IBOutlet weak var distance1Button: UIButton!
+  @IBOutlet weak var distance2Button: UIButton!
+  @IBOutlet weak var sortBestMatchButton: UIButton!
+  @IBOutlet weak var sortDistanceButton: UIButton!
+  @IBOutlet weak var sortHighestRatedButton: UIButton!
+  @IBOutlet weak var sortContainerView: UIView!
   
   var switchStates = [Int:Bool]()
+  var distanceOptions = [0, 0.3, 1, 5, 20]
+  var selectedDistance: Double = 0
+  var selectedSort: Int?
   
   weak var delegate: FiltersViewControllerDelegate?
   
@@ -31,13 +42,79 @@ class FiltersViewController: UIViewController, UITableViewDataSource, UITableVie
     categoriesTableView.layer.cornerRadius = 5.0
     
     dealsSwitch.on = false
-    dealsSwitch.addTarget(self, action: "dealsSwitchChanged", forControlEvents: UIControlEvents.ValueChanged)
     
+    distanceAutoButton.backgroundColor = UIColor.grayColor()
+    distanceAutoButton.addTarget(self, action: "setDistance:", forControlEvents: UIControlEvents.TouchUpInside)
+    distanceAutoButton.highlighted = true
+    distanceAutoButton.layer.cornerRadius = 4
+    
+    distance1Button.addTarget(self, action: "setDistance:", forControlEvents: UIControlEvents.TouchUpInside)
+    distance1Button.highlighted = false
+    distance1Button.layer.cornerRadius = 4
+    
+    distance2Button.addTarget(self, action: "setDistance:", forControlEvents: UIControlEvents.TouchUpInside)
+    distance2Button.highlighted = false
+    distance2Button.layer.cornerRadius = 4
+    
+
+    sortBestMatchButton.addTarget(self, action: "setSortBy:", forControlEvents: UIControlEvents.TouchUpInside)
+    sortBestMatchButton.highlighted = false
+    sortBestMatchButton.layer.cornerRadius = 4
+    
+    sortDistanceButton.addTarget(self, action: "setSortBy:", forControlEvents: UIControlEvents.TouchUpInside)
+    sortDistanceButton.highlighted = false
+    sortDistanceButton.layer.cornerRadius = 4
+    
+    sortHighestRatedButton.addTarget(self, action: "setSortBy:", forControlEvents: UIControlEvents.TouchUpInside)
+    sortHighestRatedButton.highlighted = false
+    sortHighestRatedButton.layer.cornerRadius = 4
   }
   
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
     // Dispose of any resources that can be recreated.
+  }
+  
+  func setDistance(sender: UIButton!) {
+    for view in distanceContainerView.subviews {
+      if let button = view as? UIButton {
+        if button == sender {
+          button.backgroundColor = UIColor.grayColor()
+          button.highlighted = true
+          
+          if let value = button.titleLabel?.text {
+            selectedDistance = (value as NSString).doubleValue
+          } else {
+            selectedDistance = 0
+          }
+        } else {
+          button.backgroundColor = UIColor.whiteColor()
+          button.highlighted = false
+        }
+      }
+    }
+  }
+  
+  func setSortBy(sender: UIButton!) {
+    for view in sortContainerView.subviews {
+      if let button = view as? UIButton {
+        if button == sender {
+          button.backgroundColor = UIColor.grayColor()
+          button.highlighted = true
+          
+          if button.titleLabel!.text == "Best Match" {
+            selectedSort = YelpSortMode.BestMatched.rawValue
+          } else if button.titleLabel!.text == "Distance" {
+            selectedSort = YelpSortMode.Distance.rawValue
+          } else if button.titleLabel!.text == "Highest Rated" {
+            selectedSort = YelpSortMode.HighestRated.rawValue
+          }
+        } else {
+          button.backgroundColor = UIColor.whiteColor()
+          button.highlighted = false
+        }
+      }
+    }
   }
   
   @IBAction func onCancelButton(sender: AnyObject) {
@@ -61,19 +138,19 @@ class FiltersViewController: UIViewController, UITableViewDataSource, UITableVie
     
     filters["deals"] = dealsSwitch.on
     
+    if selectedDistance > 0 {
+      filters["radius"] = selectedDistance
+    }
+    
+    if selectedSort != nil {
+      filters["sort"] = selectedSort!
+    }
+    
     delegate?.filtersViewController?(self, didUpdateFilters: filters)
   }
   
-  func dealsSwitchChanged() {
-    print("deals switch toggled")
-  }
-  
   func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    if tableView == categoriesTableView {
-      return categories.count
-    } else {
-      return 0
-    }
+    return categories.count
   }
   
   func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
@@ -95,7 +172,6 @@ class FiltersViewController: UIViewController, UITableViewDataSource, UITableVie
     let indexPath = categoriesTableView.indexPathForCell(switchCell)!
       
     switchStates[indexPath.row] = value
-    print("filters view controller got event")
   }
   
   let categories = [["name" : "Afghan", "code": "afghani"],
