@@ -13,7 +13,8 @@ import UIKit
 }
 
 class FiltersViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, SwitchCellDelegate {
-  @IBOutlet weak var tableView: UITableView!
+  @IBOutlet weak var categoriesTableView: UITableView!
+  @IBOutlet weak var dealsSwitch: UISwitch!
   
   var switchStates = [Int:Bool]()
   
@@ -23,11 +24,15 @@ class FiltersViewController: UIViewController, UITableViewDataSource, UITableVie
     super.viewDidLoad()
     
     // Do any additional setup after loading the view.
-    tableView.delegate = self
-    tableView.dataSource = self
-    tableView.layer.borderColor = UIColor.blackColor().CGColor
-    tableView.layer.borderWidth = 0.3
-    tableView.layer.cornerRadius = 5.0
+    categoriesTableView.delegate = self
+    categoriesTableView.dataSource = self
+    categoriesTableView.layer.borderColor = UIColor.blackColor().CGColor
+    categoriesTableView.layer.borderWidth = 0.3
+    categoriesTableView.layer.cornerRadius = 5.0
+    
+    dealsSwitch.on = false
+    dealsSwitch.addTarget(self, action: "dealsSwitchChanged", forControlEvents: UIControlEvents.ValueChanged)
+    
   }
   
   override func didReceiveMemoryWarning() {
@@ -54,16 +59,26 @@ class FiltersViewController: UIViewController, UITableViewDataSource, UITableVie
       filters["categories"] = selectedCategories
     }
     
+    filters["deals"] = dealsSwitch.on
+    
     delegate?.filtersViewController?(self, didUpdateFilters: filters)
   }
   
+  func dealsSwitchChanged() {
+    print("deals switch toggled")
+  }
+  
   func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    return categories.count
+    if tableView == categoriesTableView {
+      return categories.count
+    } else {
+      return 0
+    }
   }
   
   func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
     let cell = tableView.dequeueReusableCellWithIdentifier("SwitchCell", forIndexPath: indexPath) as! SwitchCell
-    
+
     cell.switchLabel.text = categories[indexPath.row]["name"]
     cell.delegate = self
     
@@ -76,9 +91,9 @@ class FiltersViewController: UIViewController, UITableViewDataSource, UITableVie
     tableView.deselectRowAtIndexPath(indexPath, animated: false)
   }
   
-  func switchCell(switchCell: SwitchCell, didChangeValue value: Bool) {
-    let indexPath = tableView.indexPathForCell(switchCell)!
-    
+  func switchCell(switchCell: SwitchCell, didChangeValue value: Bool) {    
+    let indexPath = categoriesTableView.indexPathForCell(switchCell)!
+      
     switchStates[indexPath.row] = value
     print("filters view controller got event")
   }
