@@ -149,16 +149,22 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="55" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="d5S-oq-LiJ">
-                                <rect key="frame" x="20" y="100.5" width="560" height="199.5"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Category" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Bsj-SL-6Li">
+                                <rect key="frame" x="20" y="72" width="70.5" height="20.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="Vg7-ff-1se">
+                                <rect key="frame" x="20" y="100" width="560" height="200"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="200" id="fQA-rh-1Oy"/>
+                                    <constraint firstAttribute="height" constant="200" id="dgX-Cq-eHK"/>
                                 </constraints>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="SwitchCell" rowHeight="55" id="MZu-5y-eVL" customClass="SwitchCell" customModule="Yelp" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="92" width="560" height="55"/>
-                                        <autoresizingMask key="autoresizingMask"/>
+                                        <rect key="frame" x="0.0" y="28" width="560" height="55"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="MZu-5y-eVL" id="o13-gC-o9Z">
                                             <rect key="frame" x="0.0" y="0.0" width="560" height="54.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
@@ -170,7 +176,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="kq5-qV-n1K">
-                                                    <rect key="frame" x="520" y="11" width="51" height="31"/>
+                                                    <rect key="frame" x="528" y="12" width="51" height="31"/>
                                                 </switch>
                                             </subviews>
                                             <constraints>
@@ -187,20 +193,14 @@
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Category" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Bsj-SL-6Li">
-                                <rect key="frame" x="20" y="72" width="70.5" height="20.5"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstAttribute="trailing" secondItem="d5S-oq-LiJ" secondAttribute="trailing" constant="20" id="6un-9V-v6Z"/>
+                            <constraint firstItem="Vg7-ff-1se" firstAttribute="leading" secondItem="gfU-9c-iZ4" secondAttribute="leading" constant="20" id="Bq2-yl-Sdt"/>
                             <constraint firstItem="Bsj-SL-6Li" firstAttribute="leading" secondItem="gfU-9c-iZ4" secondAttribute="leading" constant="20" id="DwN-lH-6Jp"/>
                             <constraint firstItem="Bsj-SL-6Li" firstAttribute="top" secondItem="z96-Xj-DbY" secondAttribute="bottom" constant="8" id="ZsM-qv-TFe"/>
-                            <constraint firstItem="d5S-oq-LiJ" firstAttribute="top" secondItem="Bsj-SL-6Li" secondAttribute="bottom" constant="8" id="eHn-ta-CDo"/>
-                            <constraint firstItem="d5S-oq-LiJ" firstAttribute="leading" secondItem="gfU-9c-iZ4" secondAttribute="leading" constant="20" id="hfi-4c-VPY"/>
+                            <constraint firstItem="Vg7-ff-1se" firstAttribute="top" secondItem="Bsj-SL-6Li" secondAttribute="bottom" constant="7.5" id="hyK-4f-ZmW"/>
+                            <constraint firstAttribute="trailing" secondItem="Vg7-ff-1se" secondAttribute="trailing" constant="20" id="uFn-4r-n5Y"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Filters" id="WT6-i7-Kfv">
@@ -216,7 +216,7 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
-                        <outlet property="tableView" destination="d5S-oq-LiJ" id="1a0-6w-Nlq"/>
+                        <outlet property="tableView" destination="Vg7-ff-1se" id="rbQ-53-l1c"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="JrQ-kI-Pxp" userLabel="First Responder" sceneMemberID="firstResponder"/>
