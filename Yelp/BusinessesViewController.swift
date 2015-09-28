@@ -8,10 +8,14 @@
 
 import UIKit
 
-class BusinessesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, FiltersViewControllerDelegate {
+class BusinessesViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, FiltersViewControllerDelegate,
+                                UISearchBarDelegate {
   
   @IBOutlet weak var tableView: UITableView!
   var businesses: [Business]!
+  var filteredBusinesses: [Business]?
+  var currentSearchTerm = "Restaurants"
+  var currentFilters = [String:AnyObject]()
   
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -21,26 +25,24 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
     tableView.rowHeight = UITableViewAutomaticDimension
     tableView.estimatedRowHeight = 140
     
-    Business.searchWithTerm("Thai", completion: { (businesses: [Business]!, error: NSError!) -> Void in
-      self.businesses = businesses
-      
-      self.tableView.reloadData()
+    let searchBar = UISearchBar()
+    searchBar.delegate = self
+    searchBar.sizeToFit()
+    searchBar.placeholder = "Search Yelp"
+    
+    navigationItem.titleView = searchBar
+    
+    KVNProgress.showWithStatus("Searching...")
+    
+    Business.searchWithTerm(currentSearchTerm, completion: { (businesses: [Business]!, error: NSError!) -> Void in
+      self.doSearch(self.currentSearchTerm)
       
       for business in businesses {
         print(business.name!)
         print(business.address!)
       }
     })
-    
-    /*Business.searchWithTerm("Restaurants", sort: .Distance, categories: ["asianfusion", "burgers"], deals: true) { (businesses: [Business]!, error: NSError!) -> Void in
-    self.businesses = businesses
-    self.tableView.reloadData()
-    
-    for business in businesses {
-    print(business.name!)
-    print(business.address!)
-    }
-    }*/
+
   }
   
   override func didReceiveMemoryWarning() {
@@ -49,7 +51,9 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
   }
   
   func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    if businesses != nil {
+    if filteredBusinesses != nil {
+      return filteredBusinesses!.count
+    } else if businesses != nil {
       return businesses!.count
     } else {
       return 0
@@ -59,13 +63,46 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
   func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
     let cell = tableView.dequeueReusableCellWithIdentifier("BusinessCell", forIndexPath: indexPath) as! BusinessCell
     
-    cell.business = businesses[indexPath.row]
+    if filteredBusinesses?.count > 0 {
+      cell.business = filteredBusinesses![indexPath.row]
+    } else {
+      cell.business = businesses[indexPath.row]
+    }
     
     return cell
   }
   
   func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
     tableView.deselectRowAtIndexPath(indexPath, animated: true)
+  }
+  
+  func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
+    if searchText == "" {
+      doSearch(nil)
+    } else {
+      currentSearchTerm = searchText
+      doSearch(searchText)
+    }
+  }
+  
+  func doSearch(searchTerm: String?) {
+    doSearch(searchTerm, sort: currentFilters["sort"] as? YelpSortMode, categories: currentFilters["categories"] as? [String], deals: currentFilters["deals"] as? Bool)
+  }
+  
+  func doSearch(searchTerm: String?, sort: YelpSortMode?, categories: [String]?, deals: Bool?) {
+    let term = searchTerm ?? "Restaurants"
+    
+    KVNProgress.showWithStatus("Searching...")
+    
+    Business.searchWithTerm(term, sort: sort, categories: categories, deals: deals) { (businesses: [Business]!, error: NSError!) -> Void in
+      if error == nil {
+        self.businesses = businesses
+        self.tableView.reloadData()
+        KVNProgress.dismiss()
+      } else {
+        // TODO: Show error
+      }
+    }
   }
   
   /*
@@ -82,13 +119,9 @@ class BusinessesViewController: UIViewController, UITableViewDataSource, UITable
   }
   
   func filtersViewController(filtersViewController: FiltersViewController, didUpdateFilters filters: [String : AnyObject]) {
-    let categories = filters["categories"] as? [String]
-    let deals = filters["deals"] as! Bool
+    currentFilters = filters
     
     // TODO: Pass filter values
-    Business.searchWithTerm("Restaurants", sort: nil, categories: categories, deals: deals) { (businesses: [Business]!, error: NSError!) -> Void in
-      self.businesses = businesses
-      self.tableView.reloadData()
-    }
+    doSearch(currentSearchTerm)
   }
 }

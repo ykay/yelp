@@ -3,7 +3,7 @@
 //  Yelp
 //
 //  Created by Yuichi Kuroda on 9/27/15.
-//  Copyright © 2015 Timothy Lee. All rights reserved.
+//  Copyright © 2015 Yuichi Kuroda. All rights reserved.
 //
 
 import UIKit
